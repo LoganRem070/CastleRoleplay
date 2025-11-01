@@ -29,8 +29,8 @@ function damageMatGiver(pla, object)
     end
 
     --give mats
-    if math.random(1, 3) == 1 and profiles[pla] then
-        
+    if math.random(1, (toolModule[tool.Name].Luck or 3)) == 1 and profiles[pla] then
+
         local matName = "Leather"
         if object.Name == "Tree" then
             matName = "Wood"
