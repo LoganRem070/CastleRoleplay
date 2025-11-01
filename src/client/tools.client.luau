@@ -56,7 +56,6 @@ char.ChildAdded:Connect(function(tool)
         tool.Activated:Connect(function()
             if db then return end
             db = true
-            print("Tool activated: " .. tool.Name)
 
             currentTrack:Stop()
             currentTrack = animatorModule.PlayAnimation(animatorModule.IDs[tooltype.."Swing"])
@@ -77,17 +76,15 @@ char.ChildAdded:Connect(function(tool)
         end);
         tool:WaitForChild("Contact").Touched:Connect(checkHit);
         tool:GetPropertyChangedSignal("Parent"):Connect(function()
-            if tool.Parent ~= char then
-                print("Tool unequipped: " .. tool.Name)
-                -- Add tool unequip logic here
-                if connections[tool] then
-                    for _, conn in pairs(connections[tool]) do
-                        conn:Disconnect()
-                    end
-                    connections[tool] = nil
+            if tool.Parent == char then return end --still equipped
+
+            if connections[tool] then
+                for _, conn in pairs(connections[tool]) do
+                    conn:Disconnect()
                 end
-                animatorModule.CancelAll()
+                connections[tool] = nil
             end
+            animatorModule.CancelAll()
         end)
     }
 

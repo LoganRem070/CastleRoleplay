@@ -5,6 +5,7 @@ local assets = repStorage:WaitForChild("Assets")
 local modules = repStorage:WaitForChild("Modules")
 
 local toolModule = require(modules:WaitForChild("Tools"))
+local profiles = require(script.Parent.profiles)
 
 function damageMatGiver(pla, object)
     if not object:GetAttribute("Health") then
@@ -18,13 +19,27 @@ function damageMatGiver(pla, object)
     
     object:SetAttribute("Health", object:GetAttribute("Health") - (toolModule[tool.Name].Damage or 1))
     if not tool:GetAttribute("Durability") then
-        tool:SetAttribute("Durability", 4)
+        tool:SetAttribute("Durability", toolModule[tool.Name].Durability or 100)
     end
     tool:SetAttribute("Durability", tool:GetAttribute("Durability") - 1)
     tool.ToolTip = `Durability: {tool:GetAttribute("Durability")}/{toolModule[tool.Name].Durability or 100}`
     if tool:GetAttribute("Durability") <= 0 then
         tool.Parent = nil
         game:GetService("Debris"):AddItem(tool, 5)
+    end
+
+    --give mats
+    if math.random(1, 3) == 1 and profiles[pla] then
+        
+        local matName = "Leather"
+        if object.Name == "Tree" then
+            matName = "Wood"
+        elseif object.Name == "Rock" then
+            matName = math.random(1, 4) == 1 and "Iron" or "Stone"
+        end
+
+        profiles[pla].Data.Materials[matName] += 1
+        events:WaitForChild("UpdateMaterials"):FireClient(pla, profiles[pla].Data.Materials)
     end
 
     --deal with killing objects

@@ -29,7 +29,7 @@ local PROFILE_TEMPLATE = {
 
 
 local PlayerStore = profileStore.New("PlayerStore", PROFILE_TEMPLATE)
-local Profiles: {[Player]: typeof(PlayerStore:StartSessionAsync())} = {}
+local Profiles: {[Player]: typeof(PlayerStore:StartSessionAsync())} = require(script.profiles)
 
 local function PlayerAdded(pla)
 
@@ -90,6 +90,7 @@ function updateMaterial(pla, materialName, amount)
     end
     events:WaitForChild("UpdateMaterials"):FireClient(pla, materials)
 end
+events:WaitForChild("UpdateMaterial").Event:Connect(updateMaterial)
 
 events:WaitForChild("GetMaterials").OnServerInvoke = function(pla)
     local profile = Profiles[pla]

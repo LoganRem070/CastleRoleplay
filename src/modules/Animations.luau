@@ -24,7 +24,8 @@ module.CancelAll = function()
     local pla, char, humanoid, animator = getStuff()
     if not pla or not char or not humanoid or not animator then return end
 
-    for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+    for _, track :AnimationTrack in pairs(animator:GetPlayingAnimationTracks()) do
+        if track.Priority ~= Enum.AnimationPriority.Action then continue end
         track:Stop()
     end
 end
