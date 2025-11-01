@@ -17,6 +17,15 @@ function damageMatGiver(pla, object)
     if not toolModule[tool.Name] then return end
     
     object:SetAttribute("Health", object:GetAttribute("Health") - (toolModule[tool.Name].Damage or 1))
+    if not tool:GetAttribute("Durability") then
+        tool:SetAttribute("Durability", 4)
+    end
+    tool:SetAttribute("Durability", tool:GetAttribute("Durability") - 1)
+    tool.ToolTip = `Durability: {tool:GetAttribute("Durability")}/{toolModule[tool.Name].Durability or 100}`
+    if tool:GetAttribute("Durability") <= 0 then
+        tool.Parent = nil
+        game:GetService("Debris"):AddItem(tool, 5)
+    end
 
     --deal with killing objects
     if object:GetAttribute("Health") > 0 then return end

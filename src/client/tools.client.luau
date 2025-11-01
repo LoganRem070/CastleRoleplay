@@ -33,7 +33,10 @@ char.ChildAdded:Connect(function(tool)
     local function checkHit(hit)
         if not hitting then return end
         if not hit or not hit.Parent then return end
-        
+        if hit == handle then return end
+        if hit.Parent == handle.Parent then return end
+        if hit.Parent == char then return end
+
         if hit.Parent.Name == "Tree" and tool.Name:find(" Axe") then
             events:WaitForChild("ChopTree"):FireServer(hit.Parent, tool)
             hitting = false --prevent multi hits
@@ -60,8 +63,6 @@ char.ChildAdded:Connect(function(tool)
 
             hitting = true
             for _, v in pairs(game.Workspace:GetPartsInPart(tool:WaitForChild("Contact"))) do
-                if v == handle then continue end
-                if v.Parent == handle.Parent then continue end
                 checkHit(v)
             end
             task.wait(0.7) --SWING TIME 
@@ -69,6 +70,7 @@ char.ChildAdded:Connect(function(tool)
 
             task.wait(0.3) --DB TIME
 
+            if not tool or not tool.Parent then return end
             currentTrack:Stop()
             currentTrack = animatorModule.PlayAnimation(animatorModule.IDs[tooltype.."Idle"])
             db = false
