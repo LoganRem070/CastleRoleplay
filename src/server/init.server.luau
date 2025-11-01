@@ -1,46 +1,56 @@
 --// SERVICES
 local Players = game:GetService("Players")
+local repStorage = game:GetService("ReplicatedStorage")
+
+--//Places
+local events = repStorage:WaitForChild("Events")
+local assets = repStorage:WaitForChild("Assets")
+local modules = repStorage:WaitForChild("Modules")
 
 --//MODULES
-local profileStore = require(game:GetService("ReplicatedStorage").Modules.ProfileStore)
-
+local profileStore = require(modules.ProfileStore)
 
 
 
 -- This is the default template code for profilestore
 local PROFILE_TEMPLATE = {
-   Thaler = 25;
-   Items = {
+    Materials = {
+        Thaler = 20,
+        Wood = 0,
+        Stone = 0,
+        Iron = 0,
+    };
+    Items = {
         Pickaxe = 1,
         Axe = 1,
-   };
-   Armors = {};
+    };
+    Armors = {};
 }
 
 
 local PlayerStore = profileStore.New("PlayerStore", PROFILE_TEMPLATE)
 local Profiles: {[Player]: typeof(PlayerStore:StartSessionAsync())} = {}
 
-local function PlayerAdded(player)
+local function PlayerAdded(pla)
 
-   local profile = PlayerStore:StartSessionAsync(`{player.UserId}`, {
+   local profile = PlayerStore:StartSessionAsync(`{pla.UserId}`, {
       Cancel = function()
-         return player.Parent ~= Players
+         return pla.Parent ~= Players
       end,
    })
    if profile ~= nil then
 
-      profile:AddUserId(player.UserId)
+      profile:AddUserId(pla.UserId)
       profile:Reconcile()
 
       profile.OnSessionEnd:Connect(function()
-         Profiles[player] = nil
-         player:Kick(`Profile session end - Please rejoin`)
+         Profiles[pla] = nil
+         pla:Kick(`Profile session end - Please rejoin`)
       end)
 
-      if player.Parent == Players then
-         Profiles[player] = profile
-         print(`Profile loaded for {player.DisplayName}!`)
+      if pla.Parent == Players then
+         Profiles[pla] = profile
+         print(`Profile loaded for {pla.DisplayName}!`)
         
         --do loaded stuff
 
@@ -49,19 +59,43 @@ local function PlayerAdded(player)
       end
 
    else
-      player:Kick(`Profile load fail - Please rejoin`)
+      pla:Kick(`Profile load fail - Please rejoin`)
    end
 
 end
 
-for _, player in Players:GetPlayers() do
-   task.spawn(PlayerAdded, player)
+for _, pla in Players:GetPlayers() do
+   task.spawn(PlayerAdded, pla)
 end
 Players.PlayerAdded:Connect(PlayerAdded)
 
-Players.PlayerRemoving:Connect(function(player)
-   local profile = Profiles[player]
+Players.PlayerRemoving:Connect(function(pla)
+   local profile = Profiles[pla]
    if profile ~= nil then
       profile:EndSession()
    end
 end)
+
+
+--//MATERIALS
+
+function updateMaterial(pla, materialName, amount)
+    local profile = Profiles[pla]
+    if profile == nil then return end
+
+    local materials = profile.Data.Materials
+    materials[materialName] = (materials[materialName] or 0) + amount
+    if materials[materialName] < 0 then
+        materials[materialName] = 0
+    end
+    events:WaitForChild("UpdateMaterials"):FireClient(pla, materials)
+end
+
+events:WaitForChild("GetMaterials").OnServerInvoke = function(pla)
+    local profile = Profiles[pla]
+    if profile ~= nil then
+        return profile.Data.Materials
+    else
+        return {}
+    end
+end
