@@ -62,7 +62,7 @@ function damageMatGiver(pla, object)
     end
 
     toggleTransparency(false)
-    task.wait(5)
+    task.wait(5) --COOLDOWN FOR ITEMS
     toggleTransparency(true)
     object:SetAttribute("Health", 10)
 
@@ -71,5 +71,7 @@ end
 events:WaitForChild("ChopTree").OnServerEvent:Connect(damageMatGiver)
 events:WaitForChild("MineRock").OnServerEvent:Connect(damageMatGiver)
 events:WaitForChild("AttackChar").OnServerEvent:Connect(function(pla, char, tool)
-    print(pla.Name .. " is attacking a char with " .. tool.Name)
+    if not char:FindFirstChild("Humanoid") then return end
+
+    char.Humanoid:TakeDamage(toolModule[tool.Name].HumanoidDamage or 0)
 end)

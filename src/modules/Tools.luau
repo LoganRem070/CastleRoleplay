@@ -1,6 +1,7 @@
 return {
     ["Wooden Axe"] = {
         Luck = 3,
+        HumanoidDamage = 6,
         Durability = 100,
         SellValue = nil,
         Cost = {
@@ -9,6 +10,7 @@ return {
     };
     ["Wooden Pickaxe"] = {
         Luck = 3,
+        HumanoidDamage = 6,
         Durability = 100,
         SellValue = nil,
         Cost = {
@@ -17,6 +19,7 @@ return {
     };
     ["Stone Axe"] = {
         Luck = 2,
+        HumanoidDamage = 10,
         Durability = 150,
         SellValue = 30,
         Cost = {
@@ -26,6 +29,7 @@ return {
     };
     ["Stone Pickaxe"] = {
         Luck = 2,
+        HumanoidDamage = 10,
         Durability = 150,
         SellValue = 30,
         Cost = {
@@ -35,6 +39,7 @@ return {
     };
     ["Iron Axe"] = {
         Luck = 1,
+        HumanoidDamage = 17,
         Durability = 300,
         SellValue = 75,
         Cost = {
@@ -44,6 +49,7 @@ return {
     };
     ["Iron Pickaxe"] = {
         Luck = 1,
+        HumanoidDamage = 17,
         Durability = 300,
         SellValue = 75,
         Cost = {
