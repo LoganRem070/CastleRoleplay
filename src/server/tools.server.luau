@@ -1,0 +1,15 @@
+local repStorage = game:GetService("ReplicatedStorage")
+
+local events = repStorage:WaitForChild("Events")
+local assets = repStorage:WaitForChild("Assets")
+local modules = repStorage:WaitForChild("Modules")
+
+events:WaitForChild("ChopTree").OnServerEvent:Connect(function(pla, tree, tool)
+    print(pla.Name .. " is chopping a tree with " .. tool.Name)
+end)
+events:WaitForChild("MineRock").OnServerEvent:Connect(function(pla, rock, tool)
+    print(pla.Name .. " is mining a rock with " .. tool.Name)
+end)
+events:WaitForChild("AttackChar").OnServerEvent:Connect(function(pla, char, tool)
+    print(pla.Name .. " is attacking a char with " .. tool.Name)
+end)
