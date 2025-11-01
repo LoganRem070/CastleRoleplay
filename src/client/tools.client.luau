@@ -7,6 +7,8 @@ local modules = repStorage:WaitForChild("Modules")
 local pla = game:GetService("Players").LocalPlayer
 local char = pla.Character or pla.CharacterAdded:Wait()
 
+local animatorModule = require(modules:WaitForChild("Animations"))
+
 local connections = {}
 
 char.ChildAdded:Connect(function(tool)
@@ -16,6 +18,17 @@ char.ChildAdded:Connect(function(tool)
     local hitting = false
     local db = false
     local handle = tool:WaitForChild("Handle")
+    local tooltype = ""
+
+    if tool.Name:find(" Axe") then
+        tooltype = "Axe"
+    elseif tool.Name:find("Pickaxe") then
+        tooltype = "Pickaxe"
+    elseif tool.Name:find("Sword") then
+        tooltype = "Sword"
+    end
+
+    local currentTrack = animatorModule.PlayAnimation(animatorModule.IDs[tooltype.."Idle"])
 
     local function checkHit(hit)
         if not hitting then return end
@@ -42,6 +55,9 @@ char.ChildAdded:Connect(function(tool)
             db = true
             print("Tool activated: " .. tool.Name)
 
+            currentTrack:Stop()
+            currentTrack = animatorModule.PlayAnimation(animatorModule.IDs[tooltype.."Swing"])
+
             hitting = true
             for _, v in pairs(game.Workspace:GetPartsInPart(tool:WaitForChild("Contact"))) do
                 if v == handle then continue end
@@ -51,7 +67,10 @@ char.ChildAdded:Connect(function(tool)
             task.wait(0.7) --SWING TIME 
             hitting = false
 
-            task.wait(0.4) --DB TIME
+            task.wait(0.3) --DB TIME
+
+            currentTrack:Stop()
+            currentTrack = animatorModule.PlayAnimation(animatorModule.IDs[tooltype.."Idle"])
             db = false
         end);
         tool:WaitForChild("Contact").Touched:Connect(checkHit);
@@ -65,6 +84,7 @@ char.ChildAdded:Connect(function(tool)
                     end
                     connections[tool] = nil
                 end
+                animatorModule.CancelAll()
             end
         end)
     }

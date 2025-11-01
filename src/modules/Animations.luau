@@ -5,8 +5,40 @@ module.IDs = {
     AxeSwing = 80596860185546,
     PickaxeIdle = 122159244208589,
     PickaxeSwing = 112054702883933,
-    SwordIdle = 322,
+    SwordIdle = 0000000,
     SwordSwing = 0000000,
 }
+
+function getStuff()
+    if game:GetService("RunService"):IsServer() then
+        return nil
+    end
+    local pla = game:GetService("Players").LocalPlayer
+    local char = pla.Character or pla.CharacterAdded:Wait()
+    local humanoid = char:WaitForChild("Humanoid")
+    local animator = humanoid:WaitForChild("Animator")
+    return pla, char, humanoid, animator
+end
+
+module.CancelAll = function()
+    local pla, char, humanoid, animator = getStuff()
+    if not pla or not char or not humanoid or not animator then return end
+
+    for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+        track:Stop()
+    end
+end
+
+module.PlayAnimation = function(animID)
+    local pla, char, humanoid, animator = getStuff()
+    if not pla or not char or not humanoid or not animator then return end
+
+    local animation = Instance.new("Animation")
+    animation.AnimationId = `rbxassetid://{animID}`
+
+    local track = animator:LoadAnimation(animation)
+    track:Play()
+    return track
+end
 
 return module
