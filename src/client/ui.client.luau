@@ -77,6 +77,13 @@ for toolName, info in pairs(toolInfo) do
     end)
 end
 
+--req to craft
+craftingFrame:WaitForChild("Details"):WaitForChild("Button").MouseButton1Click:Connect(function()
+    if not activeCraft then return end
+    craftingFrame:WaitForChild("Details").Visible = false
+    events:WaitForChild("CraftItem"):FireServer(activeCraft)
+    activeCraft = nil
+end)
 
 
 --//DIALOGUE

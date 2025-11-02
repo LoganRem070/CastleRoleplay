@@ -10,6 +10,7 @@ local modules = repStorage:WaitForChild("Modules")
 --//MODULES
 local profileStore = require(modules.ProfileStore)
 local materialInfo = require(modules:WaitForChild("Materials"))
+local toolInfo = require(modules.Tools)
 
 
 -- This is the default template code for profilestore
@@ -21,8 +22,14 @@ local PROFILE_TEMPLATE = {
         Iron = 0,
     };
     Items = {
-        Pickaxe = 1,
-        Axe = 1,
+        {
+            Name = "Wooden Pickaxe",
+            Durability = 100,
+        },
+        {
+            Name = "Wooden Axe",
+            Durability = 100,
+        },
     };
     Armors = {};
 }
@@ -118,4 +125,29 @@ events:WaitForChild("TradeMaterial").OnServerEvent:Connect(function(pla, materia
     end
 
     events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
+end)
+
+events:WaitForChild("CraftItem").OnServerEvent:Connect(function(pla, itemName)
+    local profile = Profiles[pla]
+    if not profile then return end
+    
+    if toolInfo[itemName] then
+        --check for resources
+        for matName, matCost in pairs(toolInfo[itemName].Cost) do
+            if profile.Data.Materials[matName] < matCost then return end
+        end
+
+        --take resources
+        for matName, matCost in pairs(toolInfo[itemName].Cost) do
+            profile.Data.Materials[matName] -= matCost
+        end
+
+        repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone().Parent = pla.Backpack
+        table.insert(profile.Data.Items, {
+            Name = itemName,
+            Durability = toolInfo[itemName].Durability,
+        })
+
+        return
+    end
 end)
