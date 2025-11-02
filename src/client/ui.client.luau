@@ -8,6 +8,32 @@ local events = repStorage:WaitForChild("Events")
 local assets = repStorage:WaitForChild("Assets")
 local modules = repStorage:WaitForChild("Modules")
 
+--//NOTIFACTIONS
+local notifCounter = 0
+function notify(text)
+    local clone = assets:WaitForChild("NotifTemplate"):Clone()
+    clone.Text = text
+    clone.LayoutOrder = notifCounter
+    notifCounter += 1
+    clone.Parent = mainGui:WaitForChild("Notifs")
+
+    local function tweeeen(val)
+        local t = game:GetService("TweenService"):Create(clone,
+            TweenInfo.new(1), {
+            TextTransparency = val,
+            TextStrokeTransparency = val,
+        })
+        t:Play()
+        t.Completed:Wait()
+    end
+
+    tweeeen(0)
+    task.delay(5, function()
+        tweeeen(1)
+        clone:Destroy()
+    end)
+end
+
 --//MATERIALS
 
 local materialFrame = mainGui:WaitForChild("Materials")
@@ -17,7 +43,7 @@ function updateMaterials(materials)
         materials = events:WaitForChild("GetMaterials"):InvokeServer()
     end
 
-    for materialName, amount in pairs(materials) do
+    for materialName :string, amount in pairs(materials) do
         
         local matLabel = materialFrame:FindFirstChild(materialName)
         if not matLabel then
@@ -28,7 +54,10 @@ function updateMaterials(materials)
             matLabel.LayoutOrder = materialInfo[materialName].LayoutOrder
             matLabel.Parent = materialFrame
         end
-        matLabel:WaitForChild("Amount").Text = amount
+        local diff = amount - tonumber(matLabel.Amount.Text)
+        if diff ~= 0 then
+            notify(`{diff > 0 and "+" or ""}{diff} {materialName:upper()}`)
+        end
         matLabel.Visible = amount > 0 --only visible if u have some
 
     end
