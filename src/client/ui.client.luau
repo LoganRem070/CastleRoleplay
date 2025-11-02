@@ -37,3 +37,14 @@ updateMaterials(nil)
 events:WaitForChild("UpdateMaterials").OnClientEvent:Connect(function(materials)
     updateMaterials(materials)
 end)
+
+
+--//DIALOGUE
+local chatFrame = mainGui:WaitForChild("Chat")
+
+for _, npc in pairs(workspace:WaitForChild("NPCs"):GetChildren()) do
+    local prompt = npc:WaitForChild("HumanoidRootPart"):WaitForChild("TalkPrompt")
+    prompt.Triggered:Connect(function(pla)
+        
+    end)
+end
