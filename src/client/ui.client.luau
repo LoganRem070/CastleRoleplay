@@ -48,33 +48,48 @@ local dialogues = {
     Jerry = {
         "Hello there, traveler! Would you like to see my shop?",
         {
-            ["Yes!"] = function()
-                newDialogue("OpenShop")
+            ["I want to buy materials"] = function()
+                newDialogue("BuyMaterials")
             end,
-            ["No, thanks."] = nil,
+            ["I want to sell materials"] = function()
+                newDialogue("SellMaterials")
+            end,
+            ["No, thanks."] = 0,
         }
     };
-    OpenShop = {
+    BuyMaterials = {
         "Great! Here's what I have for sale.",
         {
-            ["Buy Wood (5 Thaler)"] = function()
-                events:WaitForChild("BuyItem"):InvokeServer("Wood", 5)
-                newDialogue("Jerry")
-            end,
-            ["Buy Stone (5 Thaler)"] = function()
-                events:WaitForChild("BuyItem"):InvokeServer("Stone", 5)
-                newDialogue("Jerry")
-            end,
-            ["Leave"] = nil,
+            ["Leave"] = 0    
+        }
+    };
+    SellMaterials = {
+        "Great! Here's what I have for sale.",
+        {
+            ["Leave"] = 0    
         }
     };
     broken = {
         "You broke it",
         {
-            ["Sorry"] = nil,
+            ["Sorry"] = 0,
         }
     };
 }
+
+--special openshop one with stuff
+for matName, info in pairs(materialInfo) do
+    if info.BuyPrice then
+        dialogues.BuyMaterials[2][`Buy {matName} ({info.BuyPrice} Thaler)`] = function()
+            events:WaitForChild("TradeMaterial"):FireServer(matName, 1)
+        end
+    end
+    if info.SellPrice then
+        dialogues.SellMaterials[2][`Sell {matName} ({info.SellPrice} Thaler)`] = function()
+            events:WaitForChild("TradeMaterial"):FireServer(matName, -1)
+        end
+    end
+end
 
 newDialogue = function(id)
 
@@ -86,7 +101,7 @@ newDialogue = function(id)
     end
 
     --load options
-    local picked = false
+    local picked = nil
     local frames = {}
     for optionText, callback in pairs(dialogues[id][2] or {}) do
         local optionFrame = assets:WaitForChild("ChatOption"):Clone()
@@ -94,17 +109,28 @@ newDialogue = function(id)
         optionFrame.Parent = chatFrame:WaitForChild("Options")
 
         frames[optionFrame] = optionFrame.MouseButton1Click:Connect(function()
-            if callback then
-                callback()
-            end
-            picked = true
+            picked = callback
         end)
+        if callback == 0 then
+            optionFrame.LayoutOrder = 99999
+        end
     end
 
     --wait for pick
     repeat
         task.wait(0.1)
     until picked
+
+    --clear options
+    for frame, conn in pairs(frames) do
+        conn:Disconnect()
+        frame:Destroy()
+    end
+
+    --run new dialogue if given
+    if picked and picked ~= 0 then
+        picked()
+    end
 end
 
 for _, npc in pairs(workspace:WaitForChild("NPCs"):GetChildren()) do

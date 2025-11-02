@@ -9,7 +9,7 @@ local modules = repStorage:WaitForChild("Modules")
 
 --//MODULES
 local profileStore = require(modules.ProfileStore)
-
+local materialInfo = require(modules:WaitForChild("Materials"))
 
 
 -- This is the default template code for profilestore
@@ -100,3 +100,22 @@ events:WaitForChild("GetMaterials").OnServerInvoke = function(pla)
         return {}
     end
 end
+
+events:WaitForChild("TradeMaterial").OnServerEvent:Connect(function(pla, materialName, amt)
+    local profile = Profiles[pla]
+    if profile == nil then return end
+
+    if amt < 0 then -- sell
+        if profile.Data.Materials[materialName] >= math.abs(amt) then
+            profile.Data.Materials[materialName] += amt
+            profile.Data.Materials["Thaler"] += math.abs(amt) * materialInfo[materialName].SellPrice
+        end
+    else --buy
+        if profile.Data.Materials["Thaler"] >= amt * materialInfo[materialName].BuyPrice then
+            profile.Data.Materials[materialName] += amt
+            profile.Data.Materials["Thaler"] -= amt * materialInfo[materialName].BuyPrice
+        end
+    end
+
+    events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
+end)
