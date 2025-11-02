@@ -240,6 +240,7 @@ events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, a
             thisItemsStats = toolInfo[itemName]
             whereToAdd = profile.Data.Items
         end
+        print(thisItemsStats)
         if not thisItemsStats then return end
 
         if profile.Data.Materials.Thaler >= thisItemsStats.BuyPrice then
@@ -248,7 +249,14 @@ events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, a
                 Name = thisItemsStats.Name,
                 Durability = thisItemsStats.Durability,
             })
+
+            if toolInfo[itemName] then
+                repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone().Parent = pla.Backpack
+            else
+                equipBestArmor(pla)
+            end
         end
 
+        events:WaitForChild("UpdateMaterials"):FireClient(pla)
     end
 end)
