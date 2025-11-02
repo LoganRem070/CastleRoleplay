@@ -4,17 +4,13 @@ local events = repStorage:WaitForChild("Events")
 local assets = repStorage:WaitForChild("Assets")
 local modules = repStorage:WaitForChild("Modules")
 
-local pla = game:GetService("Players").LocalPlayer
-local char = pla.Character or pla.CharacterAdded:Wait()
-pla.CharacterAdded:Connect(function(new)
-    char = new
-end)
-
 local animatorModule = require(modules:WaitForChild("Animations"))
 
-local connections = {}
+local pla = game:GetService("Players").LocalPlayer
+local char = pla.Character or pla.CharacterAdded:Wait()
 
-char.ChildAdded:Connect(function(tool)
+local connections = {}
+function daloop(tool)
     if not tool:IsA("Tool") then return end
     if not game:GetService("CollectionService"):HasTag(tool, "Tool") then return end
 
@@ -91,4 +87,11 @@ char.ChildAdded:Connect(function(tool)
         end)
     }
 
+end
+
+
+pla.CharacterAdded:Connect(function(new)
+    char = new
+    char.ChildAdded:Connect(daloop)
 end)
+char.ChildAdded:Connect(daloop)
