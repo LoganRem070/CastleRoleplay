@@ -56,7 +56,7 @@ function updateMaterials(materials)
         end
         local diff = amount - tonumber(matLabel.Amount.Text)
         if diff ~= 0 then
-            notify(`{diff > 0 and "+" or ""}{diff} {materialName:upper()}`)
+            task.spawn(notify, `{diff > 0 and "+" or ""}{diff} {materialName:upper()}`)
         end
         matLabel.Visible = amount > 0 --only visible if u have some
 
