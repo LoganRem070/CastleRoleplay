@@ -80,6 +80,14 @@ local function PlayerAdded(pla)
          print(`Profile loaded for {pla.DisplayName}!`)
         
         --do loaded stuff
+        equipBestArmor(pla)
+
+        --give tools
+        for _, toolStats in pairs(profile.Data.Items) do
+            local toolClone = repStorage:WaitForChild("Tools"):WaitForChild(toolStats.Name):Clone()
+            toolClone:SetAttribute("Durability", toolStats.Durability)
+            toolClone.Parent = pla.Backpack
+        end
 
       else
          profile:EndSession()
@@ -97,10 +105,20 @@ end
 Players.PlayerAdded:Connect(PlayerAdded)
 
 Players.PlayerRemoving:Connect(function(pla)
-   local profile = Profiles[pla]
-   if profile ~= nil then
-      profile:EndSession()
-   end
+    local profile = Profiles[pla]
+    if profile == nil then return end
+
+    local toolsToSave = {}
+    for _, tool in pairs(pla.Backpack:GetChildren()) do
+        table.insert(toolsToSave, {
+            Name = tool.Name,
+            Durability = tool:GetAttribute("Durability") or 1,
+        })   
+    end
+
+    profile.Data.Items = toolsToSave
+
+    profile:EndSession()
 end)
 
 
