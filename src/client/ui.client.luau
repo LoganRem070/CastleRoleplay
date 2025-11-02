@@ -116,6 +116,17 @@ local dialogues = {
             ["Leave"] = 0    
         }
     };
+
+    Timmy = {
+        "Hello! Want to craft some things?",
+        {
+            ["Of Course!"] = function()
+                craftingFrame.Visible = true
+            end,
+            ["No Thanks"] = 0,
+        }
+    };
+
     broken = {
         "You broke it",
         {
