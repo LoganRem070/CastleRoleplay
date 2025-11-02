@@ -35,7 +35,7 @@ function damageMatGiver(pla, object)
         if object.Name == "Tree" then
             matName = "Wood"
         elseif object.Name == "Rock" then
-            matName = math.random(1, 4) == 1 and "Iron" or "Stone"
+            matName = math.random(1, 3) == 1 and "Iron" or "Stone"
         end
 
         profiles[pla].Data.Materials[matName] += 1
