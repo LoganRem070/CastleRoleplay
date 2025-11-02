@@ -11,6 +11,7 @@ local modules = repStorage:WaitForChild("Modules")
 local profileStore = require(modules.ProfileStore)
 local materialInfo = require(modules:WaitForChild("Materials"))
 local toolInfo = require(modules.Tools)
+local armorInfo = require(modules:WaitForChild("Armors"))
 
 
 -- This is the default template code for profilestore
@@ -37,6 +38,25 @@ local PROFILE_TEMPLATE = {
 
 local PlayerStore = profileStore.New("PlayerStore", PROFILE_TEMPLATE)
 local Profiles: {[Player]: typeof(PlayerStore:StartSessionAsync())} = require(script.profiles)
+
+
+function equipBestArmor(pla)
+    local profile = Profiles[pla]
+    if not profile then return end
+
+    local bestArmorName, bestArmorLayout = nil, 0
+    for _, armors in pairs(profile.Data.Armors) do
+        if armorInfo[armors.Name].Layout > bestArmorLayout then
+            bestArmorName = armors.Name
+            bestArmorLayout = armorInfo[armors.Name].Layout
+        end
+    end
+
+    if not bestArmorName then return end
+
+    --equip it
+
+end
 
 local function PlayerAdded(pla)
 
@@ -90,25 +110,41 @@ events:WaitForChild("CraftItem").OnServerEvent:Connect(function(pla, itemName)
     local profile = Profiles[pla]
     if not profile then return end
     
+    local searchTable
     if toolInfo[itemName] then
-        --check for resources
-        for matName, matCost in pairs(toolInfo[itemName].Cost) do
-            if profile.Data.Materials[matName] < matCost then return end
-        end
+        searchTable = toolInfo[itemName]
+    elseif armorInfo[itemName] then
+        searchTable = armorInfo[itemName]
+    else
+        return -- not a real tool / armor
+    end
 
-        --take resources
-        for matName, matCost in pairs(toolInfo[itemName].Cost) do
-            profile.Data.Materials[matName] -= matCost
-        end
+    --check for resources
+    for matName, matCost in pairs(searchTable.Cost) do
+        if profile.Data.Materials[matName] < matCost then return end
+    end
 
+    --take resources
+    for matName, matCost in pairs(searchTable.Cost) do
+        profile.Data.Materials[matName] -= matCost
+    end
+
+    --give tool
+    if toolInfo[itemName] then 
         repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone().Parent = pla.Backpack
         table.insert(profile.Data.Items, {
             Name = itemName,
             Durability = toolInfo[itemName].Durability,
         })
 
-        events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
-
-        return
+    --give armor  
+    elseif armorInfo[itemName] then
+        table.insert(profile.Data.Armors, {
+            Name = itemName,
+        })
+        equipBestArmor(pla)
     end
+
+    --send new materials
+    events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
 end)

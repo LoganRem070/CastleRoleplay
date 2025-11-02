@@ -43,8 +43,9 @@ end)
 
 local craftingFrame = mainGui:WaitForChild("Crafting")
 local toolInfo = require(modules:WaitForChild("Tools"))
+local armorInfo = require(modules:WaitForChild("Armors"))
 local activeCraft = nil
-for toolName, info in pairs(toolInfo) do
+function makeNewCraftable(toolName, info)
     local toolButton = assets:WaitForChild("CraftingTemplate"):Clone()
     toolButton.Name = toolName
     toolButton:WaitForChild("Title").Text = toolName
@@ -75,6 +76,13 @@ for toolName, info in pairs(toolInfo) do
         craftingFrame:WaitForChild("Details").Visible = true
 
     end)
+end
+for toolName, info in pairs(toolInfo) do
+    makeNewCraftable(toolName, info)
+end
+for armorName, info in pairs(armorInfo) do
+    info.Layout += 901 --make armors appear later on
+    makeNewCraftable(armorName, info)
 end
 
 --req to craft
