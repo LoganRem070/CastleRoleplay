@@ -43,6 +43,8 @@ local Profiles: {[Player]: typeof(PlayerStore:StartSessionAsync())} = require(sc
 function equipBestArmor(pla)
     local profile = Profiles[pla]
     if not profile then return end
+    local char = pla.Character
+    if not char then return end
 
     local bestArmorName, bestArmorLayout = nil, 0
     for _, armors in pairs(profile.Data.Armors) do
@@ -55,6 +57,36 @@ function equipBestArmor(pla)
     if not bestArmorName then return end
 
     --equip it
+    print(pla.Name, "equipping armor", bestArmorName)
+
+    --delete old
+    if char:FindFirstChild("ARMOR") then
+        char:FindFirstChild("ARMOR"):Destroy()
+    end
+
+    local armorClone = repStorage:WaitForChild('Armors'):WaitForChild(bestArmorName):Clone()
+    armorClone.Name = "ARMOR"
+    armorClone.Parent = char
+
+    for _, subArmor :Model in pairs(armorClone:GetChildren()) do
+        for _, subpart in pairs(subArmor:GetChildren()) do
+            if subpart == subArmor.PrimaryPart then continue end
+            local w = Instance.new("WeldConstraint")
+            w.Part0 = subArmor.PrimaryPart
+            w.Part1 = subpart
+            w.Parent = subArmor.PrimaryPart
+            w.Name = `sub- {subpart.Name}`
+        end
+        
+        subArmor:PivotTo(char:WaitForChild(subArmor.Name).CFrame)
+        local weld = Instance.new("WeldConstraint")
+        weld.Part0 = char:WaitForChild(subArmor.Name)
+        weld.Part1 = subArmor.PrimaryPart
+        weld.Name = "main"
+        weld.Parent = subArmor.PrimaryPart
+    end
+
+    print(armorClone.Parent)
 
 end
 
