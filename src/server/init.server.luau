@@ -180,7 +180,9 @@ events:WaitForChild("CraftItem").OnServerEvent:Connect(function(pla, itemName)
 
     --give tool
     if toolInfo[itemName] then 
-        repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone().Parent = pla.Backpack
+        local clonedTool = repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone()
+        clonedTool:SetAttribute("Durability", toolInfo[itemName].Durability)
+        clonedTool.Parent = pla.Backpack
         table.insert(profile.Data.Items, {
             Name = itemName,
             Durability = toolInfo[itemName].Durability,
@@ -251,7 +253,9 @@ events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, a
             })
 
             if toolInfo[itemName] then
-                repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone().Parent = pla.Backpack
+                local clonedTool = repStorage:WaitForChild("Tools"):WaitForChild(itemName):Clone()
+                clonedTool:SetAttribute("Durability", toolInfo[itemName].Durability)
+                clonedTool.Parent = pla.Backpack
             else
                 equipBestArmor(pla)
             end
