@@ -86,6 +86,11 @@ function equipBestArmor(pla)
         weld.Parent = subArmor.PrimaryPart
     end
 
+    local humanoid = char:FindFirstChild("Humanoid")
+    if humanoid then
+        humanoid.MaxHealth = armorInfo[bestArmorName].Health
+    end
+
 end
 
 local function PlayerAdded(pla)
@@ -239,9 +244,10 @@ events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, a
                 break
             end
         end
-        for index, possible in pairs(profile.Data.Items) do
+        for _, possible in pairs(pla.Backpack:GetChildren()) do
             if possible.Name == itemName then
-                table.remove(profile.Data.Items, index)
+                possible.Parent = nil
+                game:GetService("Debris"):AddItem(possible, 3)
                 removed = toolInfo
                 break
             end
@@ -250,6 +256,8 @@ events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, a
         --if it was removed then give thaler
         if removed then
             profile.Data.Materials.Thaler += removed[itemName].SellPrice
+            equipBestArmor(pla)
+            events:WaitForChild("UpdateMaterials"):FireClient(pla)
         end
 
     --buy items
@@ -270,7 +278,7 @@ events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, a
         if profile.Data.Materials.Thaler >= thisItemsStats.BuyPrice then
             profile.Data.Materials.Thaler -= thisItemsStats.BuyPrice
             table.insert(whereToAdd, {
-                Name = thisItemsStats.Name,
+                Name = itemName,
                 Durability = thisItemsStats.Durability,
             })
 
