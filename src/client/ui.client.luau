@@ -194,6 +194,56 @@ local dialogues = {
         }
     };
 
+    Johnny = {
+        "Hello there! Want to learn more about this world?",
+        {
+            ["Yes!"] = newDialogue("Tut1"),
+            ["No Thanks"] = 0,
+        }
+    };
+    Tut1 = {
+        "In this Medieval game you can explore the map, gather resources, and craft better items!",
+        {
+            ["Uh huh"] = newDialogue("Tut2"),
+            ["Get lost"] = 0,
+        }
+    };
+    Tut2 = {
+        "Simply hit a tree with an axe for wood. You can also hit a rock with a pickaxe for stone and iron!",
+        {
+            ["Uh huh"] = newDialogue("Tut3"),
+            ["Get lost"] = 0,
+        }
+    };
+    Tut3 = {
+        "You can then take these materials to the market to craft new items with Timmy.",
+        {
+            ["Uh huh"] = newDialogue("Tut4"),
+            ["Get lost"] = 0,
+        }
+    };
+    Tut4 = {
+        "Or you could go to Jerry to sell them for Thaler, the in game currency, and then buy items from him!",
+        {
+            ["Uh huh"] = newDialogue("Tut5"),
+            ["Get lost"] = 0,
+        }
+    };
+    Tut5 = {
+        "Buying better tools will make your resource gathering more efficent, these better tools also have more durability",
+        {
+            ["Uh huh"] = newDialogue("Tut6"),
+            ["Get lost"] = 0,
+        }
+    };
+    Tut6 = {
+        "Have fun!",
+        {
+            ["Thank you!"] = 0,
+            ["Lame ahh tutorial"] = 0,
+        }
+    };
+
     broken = {
         "You broke it",
         {
