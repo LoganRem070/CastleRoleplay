@@ -52,6 +52,13 @@ function makeNewCraftable(toolName, info)
     toolButton.LayoutOrder = info.Layout
     toolButton.Parent = craftingFrame:WaitForChild("ScrollingFrame"):WaitForChild("ScrollingFrame")
 
+    local itemClone = repStorage:WaitForChild("Tools"):FindFirstChild(toolName) or repStorage:WaitForChild("Armors"):FindFirstChild(toolName)
+    if itemClone then
+        itemClone = itemClone:Clone()
+        itemClone:PivotTo(CFrame.new(0,0,0))
+        itemClone.Parent = toolButton:WaitForChild("ViewportFrame")
+    end
+
     toolButton.MouseButton1Click:Connect(function()
         
         --clear old elements
@@ -91,6 +98,11 @@ craftingFrame:WaitForChild("Details"):WaitForChild("Button").MouseButton1Click:C
     craftingFrame:WaitForChild("Details").Visible = false
     events:WaitForChild("CraftItem"):FireServer(activeCraft)
     activeCraft = nil
+end)
+
+--close crafting menu
+craftingFrame:WaitForChild("Close").MouseButton1Click:Connect(function()
+    craftingFrame.Visible = false
 end)
 
 
@@ -147,7 +159,7 @@ local dialogues = {
         "Hello! Want to craft some things?",
         {
             ["Of Course!"] = function()
-                craftingFrame.Visible = true
+                craftingFrame.Visible = not craftingFrame.Visible
             end,
             ["No Thanks"] = 0,
         }
