@@ -77,7 +77,7 @@ function equipBestArmor(pla)
             w.Parent = subArmor.PrimaryPart
             w.Name = `sub- {subpart.Name}`
         end
-        
+
         subArmor:PivotTo(char:WaitForChild(subArmor.Name).CFrame)
         local weld = Instance.new("WeldConstraint")
         weld.Part0 = char:WaitForChild(subArmor.Name)
@@ -85,8 +85,6 @@ function equipBestArmor(pla)
         weld.Name = "main"
         weld.Parent = subArmor.PrimaryPart
     end
-
-    print(armorClone.Parent)
 
 end
 

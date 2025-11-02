@@ -109,6 +109,12 @@ local dialogues = {
             ["I want to sell materials"] = function()
                 newDialogue("SellMaterials")
             end,
+            ["I want to buy items"] = function()
+                newDialogue("BuyItems")
+            end,
+            ["I want to sell my items"] = function()
+                newDialogue("SellItems")
+            end,
             ["No, thanks."] = 0,
         }
     };
@@ -119,6 +125,18 @@ local dialogues = {
         }
     };
     SellMaterials = {
+        "Great! Here's what I am looking to buy.",
+        {
+            ["Leave"] = 0    
+        }
+    };
+    BuyItems = {
+        "Great! Here's what I have to offer.",
+        {
+            ["Leave"] = 0    
+        }
+    };
+    SellItems = {
         "Great! Here's what I am looking to buy.",
         {
             ["Leave"] = 0    
@@ -155,6 +173,34 @@ for matName, info in pairs(materialInfo) do
         dialogues.SellMaterials[2][`Sell {matName}\n({info.SellPrice} Thaler)`] = function()
             events:WaitForChild("TradeMaterial"):FireServer(matName, -1)
             newDialogue("SellMaterials")
+        end
+    end
+end
+for toolName, info in pairs(toolInfo) do
+    if info.BuyPrice then
+        dialogues.BuyItems[2][`Buy {toolName}\n({info.BuyPrice} Thaler)`] = function()
+            events:WaitForChild("TradeItem"):FireServer(toolName, 1)
+            newDialogue("BuyItems")
+        end
+    end
+    if info.SellPrice then
+        dialogues.SellItems[2][`Sell {toolName}\n({info.SellPrice} Thaler)`] = function()
+            events:WaitForChild("TradeItem"):FireServer(toolName, -1)
+            newDialogue("SellItems")
+        end
+    end
+end
+for armorName, info in pairs(armorInfo) do
+    if info.BuyPrice then
+        dialogues.BuyItems[2][`Buy {armorName}\n({info.BuyPrice} Thaler)`] = function()
+            events:WaitForChild("TradeItem"):FireServer(armorName, 1)
+            newDialogue("BuyItems")
+        end
+    end
+    if info.SellPrice then
+        dialogues.SellItems[2][`Sell {armorName}\n({info.SellPrice} Thaler)`] = function()
+            events:WaitForChild("TradeItem"):FireServer(armorName, -1)
+            newDialogue("SellItems")
         end
     end
 end
