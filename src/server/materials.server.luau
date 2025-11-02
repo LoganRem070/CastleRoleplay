@@ -5,6 +5,7 @@ local assets = repStorage:WaitForChild("Assets")
 local modules = repStorage:WaitForChild("Modules")
 
 local toolModule = require(modules:WaitForChild("Tools"))
+local materialModule = require(modules.Materials)
 local profiles = require(script.Parent.profiles)
 
 function damageMatGiver(pla, object)
@@ -74,4 +75,50 @@ events:WaitForChild("AttackChar").OnServerEvent:Connect(function(pla, char, tool
     if not char:FindFirstChild("Humanoid") then return end
 
     char.Humanoid:TakeDamage(toolModule[tool.Name].HumanoidDamage or 0)
+end)
+
+
+--//MATERIALS
+
+--other scripts update materials
+events:WaitForChild("UpdateMaterial").Event:Connect(function(pla, materialName, amount)
+    local profile = profiles[pla]
+    if profile == nil then return end
+
+    local materials = profile.Data.Materials
+    materials[materialName] = (materials[materialName] or 0) + amount
+    if materials[materialName] < 0 then
+        materials[materialName] = 0
+    end
+    events:WaitForChild("UpdateMaterials"):FireClient(pla, materials)
+end)
+
+--GIVE PLAYER MAT STATS
+events:WaitForChild("GetMaterials").OnServerInvoke = function(pla)
+    local profile = profiles[pla]
+    if profile ~= nil then
+        return profile.Data.Materials
+    else
+        return {}
+    end
+end
+
+--BUY AND SELL MATS
+events:WaitForChild("TradeMaterial").OnServerEvent:Connect(function(pla, materialName, amt)
+    local profile = profiles[pla]
+    if profile == nil then return end
+
+    if amt < 0 then -- sell
+        if profile.Data.Materials[materialName] >= math.abs(amt) then
+            profile.Data.Materials[materialName] += amt
+            profile.Data.Materials["Thaler"] += math.abs(amt) * materialModule[materialName].SellPrice
+        end
+    else --buy
+        if profile.Data.Materials["Thaler"] >= amt * materialModule[materialName].BuyPrice then
+            profile.Data.Materials[materialName] += amt
+            profile.Data.Materials["Thaler"] -= amt * materialModule[materialName].BuyPrice
+        end
+    end
+
+    events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
 end)

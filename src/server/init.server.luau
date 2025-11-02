@@ -84,49 +84,8 @@ Players.PlayerRemoving:Connect(function(pla)
 end)
 
 
---//MATERIALS
 
-function updateMaterial(pla, materialName, amount)
-    local profile = Profiles[pla]
-    if profile == nil then return end
-
-    local materials = profile.Data.Materials
-    materials[materialName] = (materials[materialName] or 0) + amount
-    if materials[materialName] < 0 then
-        materials[materialName] = 0
-    end
-    events:WaitForChild("UpdateMaterials"):FireClient(pla, materials)
-end
-events:WaitForChild("UpdateMaterial").Event:Connect(updateMaterial)
-
-events:WaitForChild("GetMaterials").OnServerInvoke = function(pla)
-    local profile = Profiles[pla]
-    if profile ~= nil then
-        return profile.Data.Materials
-    else
-        return {}
-    end
-end
-
-events:WaitForChild("TradeMaterial").OnServerEvent:Connect(function(pla, materialName, amt)
-    local profile = Profiles[pla]
-    if profile == nil then return end
-
-    if amt < 0 then -- sell
-        if profile.Data.Materials[materialName] >= math.abs(amt) then
-            profile.Data.Materials[materialName] += amt
-            profile.Data.Materials["Thaler"] += math.abs(amt) * materialInfo[materialName].SellPrice
-        end
-    else --buy
-        if profile.Data.Materials["Thaler"] >= amt * materialInfo[materialName].BuyPrice then
-            profile.Data.Materials[materialName] += amt
-            profile.Data.Materials["Thaler"] -= amt * materialInfo[materialName].BuyPrice
-        end
-    end
-
-    events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
-end)
-
+--CRAFT ITEMS
 events:WaitForChild("CraftItem").OnServerEvent:Connect(function(pla, itemName)
     local profile = Profiles[pla]
     if not profile then return end
@@ -147,6 +106,8 @@ events:WaitForChild("CraftItem").OnServerEvent:Connect(function(pla, itemName)
             Name = itemName,
             Durability = toolInfo[itemName].Durability,
         })
+
+        events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
 
         return
     end
