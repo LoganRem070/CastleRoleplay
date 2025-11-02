@@ -6,6 +6,9 @@ local modules = repStorage:WaitForChild("Modules")
 
 local pla = game:GetService("Players").LocalPlayer
 local char = pla.Character or pla.CharacterAdded:Wait()
+pla.CharacterAdded:Connect(function(new)
+    char = new
+end)
 
 local animatorModule = require(modules:WaitForChild("Animations"))
 

@@ -108,8 +108,22 @@ local function PlayerAdded(pla)
       if pla.Parent == Players then
          Profiles[pla] = profile
          print(`Profile loaded for {pla.DisplayName}!`)
-        
-        --do loaded stuff
+
+      else
+         profile:EndSession()
+      end
+
+   else
+      pla:Kick(`Profile load fail - Please rejoin`)
+   end
+
+    local groupRole = pla:GetRoleInGroup(15801083)
+
+   function newchar(char)
+        repeat
+            task.wait(0.1)
+        until Profiles[pla]
+
         equipBestArmor(pla)
 
         --give tools
@@ -120,13 +134,21 @@ local function PlayerAdded(pla)
             toolClone.Parent = pla.Backpack
         end
 
-      else
-         profile:EndSession()
-      end
+        --overhead
+        local overhead = assets:WaitForChild("Overhead"):Clone()
+        overhead:WaitForChild("Extra").Visible = false
+        overhead:WaitForChild("Username").Text = pla.Name
+        overhead:WaitForChild("Duchy").Text = "Holy Roman Empire"
+        overhead:WaitForChild("Rank").Text = groupRole == "Guest" and "Citizen" or groupRole
+        overhead.Adornee = char:WaitForChild("Head")
+        overhead.Parent = char
 
-   else
-      pla:Kick(`Profile load fail - Please rejoin`)
    end
+
+   if pla.Character then
+        newchar(pla.Character)
+   end
+   pla.CharacterAdded:Connect(newchar)
 
 end
 
