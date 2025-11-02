@@ -21,6 +21,17 @@ return {
             Wood = 5,
         },
     };
+    ["Wooden Sword"] = {
+        Layout = 3,
+        Luck = 3,
+        HumanoidDamage = 17,
+        Durability = 100,
+        BuyPrice = 25,
+        SellPrice = 5,
+        Cost = {
+            Wood = 12,
+        },
+    };
     ["Stone Axe"] = {
         Layout = 5,
         Luck = 2,
@@ -67,6 +78,18 @@ return {
         Cost = {
             Wood = 5,
             Iron = 5,
+        },
+    };
+    ["Iron Sword"] = {
+        Layout = 12,
+        Luck = 1,
+        HumanoidDamage = 34,
+        Durability = 300,
+        BuyPrice = 130,
+        SellPrice = 85,
+        Cost = {
+            Wood = 5,
+            Iron = 10,
         },
     };
 }

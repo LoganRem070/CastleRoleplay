@@ -71,10 +71,23 @@ end
 
 events:WaitForChild("ChopTree").OnServerEvent:Connect(damageMatGiver)
 events:WaitForChild("MineRock").OnServerEvent:Connect(damageMatGiver)
-events:WaitForChild("AttackChar").OnServerEvent:Connect(function(pla, char, tool)
+events:WaitForChild("AttackChar").OnServerEvent:Connect(function(pla, char)
     if not char:FindFirstChild("Humanoid") then return end
+    local tool = pla.Character and pla.Character:FindFirstChildOfClass("Tool")
+    if not tool or not tool:HasTag("Tool") then return end
+    if not toolModule[tool.Name] then return end
 
     char.Humanoid:TakeDamage(toolModule[tool.Name].HumanoidDamage or 0)
+
+    if not tool:GetAttribute("Durability") then
+        tool:SetAttribute("Durability", toolModule[tool.Name].Durability or 1)
+    end
+    tool:SetAttribute("Durability", tool:GetAttribute("Durability") - 1)
+    tool.ToolTip = `Durability: {tool:GetAttribute("Durability")}/{toolModule[tool.Name].Durability or 100}`
+    if tool:GetAttribute("Durability") <= 0 then
+        tool.Parent = nil
+        game:GetService("Debris"):AddItem(tool, 5)
+    end
 end)
 
 
