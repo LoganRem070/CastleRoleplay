@@ -41,10 +41,83 @@ end)
 
 --//DIALOGUE
 local chatFrame = mainGui:WaitForChild("Chat")
+local isOpen = false
+local newDialogue
+
+local dialogues = {
+    Jerry = {
+        "Hello there, traveler! Would you like to see my shop?",
+        {
+            ["Yes!"] = function()
+                newDialogue("OpenShop")
+            end,
+            ["No, thanks."] = nil,
+        }
+    };
+    OpenShop = {
+        "Great! Here's what I have for sale.",
+        {
+            ["Buy Wood (5 Thaler)"] = function()
+                events:WaitForChild("BuyItem"):InvokeServer("Wood", 5)
+                newDialogue("Jerry")
+            end,
+            ["Buy Stone (5 Thaler)"] = function()
+                events:WaitForChild("BuyItem"):InvokeServer("Stone", 5)
+                newDialogue("Jerry")
+            end,
+            ["Leave"] = nil,
+        }
+    };
+    broken = {
+        "You broke it",
+        {
+            ["Sorry"] = nil,
+        }
+    };
+}
+
+newDialogue = function(id)
+
+    --load text
+    local goalText = dialogues[id][1] or "..."
+    for i = 1, #goalText do
+        chatFrame:WaitForChild("Chat").Text = string.sub(goalText, 1, i)
+        task.wait(0.03)
+    end
+
+    --load options
+    local picked = false
+    local frames = {}
+    for optionText, callback in pairs(dialogues[id][2] or {}) do
+        local optionFrame = assets:WaitForChild("ChatOption"):Clone()
+        optionFrame:WaitForChild("Input").Text = optionText
+        optionFrame.Parent = chatFrame:WaitForChild("Options")
+
+        frames[optionFrame] = optionFrame.MouseButton1Click:Connect(function()
+            if callback then
+                callback()
+            end
+            picked = true
+        end)
+    end
+
+    --wait for pick
+    repeat
+        task.wait(0.1)
+    until picked
+end
 
 for _, npc in pairs(workspace:WaitForChild("NPCs"):GetChildren()) do
     local prompt = npc:WaitForChild("HumanoidRootPart"):WaitForChild("TalkPrompt")
     prompt.Triggered:Connect(function(pla)
-        
+        if isOpen then return end
+        isOpen = true
+
+        chatFrame:WaitForChild("Title").Text = npc.Name:split(", ")[1] or "broken"
+        chatFrame.Visible = true
+        newDialogue(chatFrame.Title.Text)
+
+        chatFrame.Visible = false
+        isOpen = false
     end)
 end
