@@ -1,5 +1,6 @@
 return {
     ["Wooden Axe"] = {
+        Layout = 1,
         Luck = 3,
         HumanoidDamage = 6,
         Durability = 100,
@@ -9,6 +10,7 @@ return {
         },
     };
     ["Wooden Pickaxe"] = {
+        Layout = 2,
         Luck = 3,
         HumanoidDamage = 6,
         Durability = 100,
@@ -18,6 +20,7 @@ return {
         },
     };
     ["Stone Axe"] = {
+        Layout = 5,
         Luck = 2,
         HumanoidDamage = 10,
         Durability = 150,
@@ -28,6 +31,7 @@ return {
         },
     };
     ["Stone Pickaxe"] = {
+        Layout = 6,
         Luck = 2,
         HumanoidDamage = 10,
         Durability = 150,
@@ -38,6 +42,7 @@ return {
         },
     };
     ["Iron Axe"] = {
+        Layout = 10,
         Luck = 1,
         HumanoidDamage = 17,
         Durability = 300,
@@ -48,6 +53,7 @@ return {
         },
     };
     ["Iron Pickaxe"] = {
+        Layout = 11,
         Luck = 1,
         HumanoidDamage = 17,
         Durability = 300,

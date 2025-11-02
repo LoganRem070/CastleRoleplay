@@ -39,6 +39,46 @@ events:WaitForChild("UpdateMaterials").OnClientEvent:Connect(function(materials)
 end)
 
 
+--//CRAFTING
+
+local craftingFrame = mainGui:WaitForChild("Crafting")
+local toolInfo = require(modules:WaitForChild("Tools"))
+local activeCraft = nil
+for toolName, info in pairs(toolInfo) do
+    local toolButton = assets:WaitForChild("CraftingTemplate"):Clone()
+    toolButton.Name = toolName
+    toolButton:WaitForChild("Title").Text = toolName
+    toolButton.LayoutOrder = info.Layout
+    toolButton.Parent = craftingFrame:WaitForChild("ScrollingFrame"):WaitForChild("ScrollingFrame")
+
+    toolButton.MouseButton1Click:Connect(function()
+        
+        --clear old elements
+        for _, child in pairs(craftingFrame:WaitForChild("Details"):waitForChild("Elements"):GetChildren()) do
+            if not child:IsA("TextLabel") then continue end
+            if child.Name == "Title" then continue end
+            child:Destroy()
+        end
+
+        --set new stuff
+        activeCraft = toolName
+        craftingFrame:WaitForChild("Details"):WaitForChild("Title").Text = toolName
+
+        --make new elements
+        for matName, reqAmount in pairs(info.Cost) do
+            local matLabel = craftingFrame:WaitForChild("Details"):WaitForChild("Elements"):WaitForChild("Title"):Clone()
+            matLabel.Name = matName
+            matLabel.Text = `x{reqAmount} - {matName}`
+            matLabel.Parent = craftingFrame:WaitForChild("Details"):WaitForChild("Elements")
+        end
+
+        craftingFrame:WaitForChild("Details").Visible = true
+
+    end)
+end
+
+
+
 --//DIALOGUE
 local chatFrame = mainGui:WaitForChild("Chat")
 local isOpen = false
