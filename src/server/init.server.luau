@@ -86,6 +86,7 @@ local function PlayerAdded(pla)
         for _, toolStats in pairs(profile.Data.Items) do
             local toolClone = repStorage:WaitForChild("Tools"):WaitForChild(toolStats.Name):Clone()
             toolClone:SetAttribute("Durability", toolStats.Durability)
+            toolClone.ToolTip = `Durability: {toolStats.Durability}/{toolInfo[toolStats.Name].Durability or 100}`
             toolClone.Parent = pla.Backpack
         end
 

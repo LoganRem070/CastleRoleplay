@@ -20,7 +20,7 @@ function damageMatGiver(pla, object)
     
     object:SetAttribute("Health", object:GetAttribute("Health") - (toolModule[tool.Name].Damage or 1))
     if not tool:GetAttribute("Durability") then
-        tool:SetAttribute("Durability", toolModule[tool.Name].Durability or 100)
+        tool:SetAttribute("Durability", toolModule[tool.Name].Durability or 1)
     end
     tool:SetAttribute("Durability", tool:GetAttribute("Durability") - 1)
     tool.ToolTip = `Durability: {tool:GetAttribute("Durability")}/{toolModule[tool.Name].Durability or 100}`
