@@ -64,7 +64,7 @@ local dialogues = {
         }
     };
     SellMaterials = {
-        "Great! Here's what I have for sale.",
+        "Great! Here's what I am looking to buy.",
         {
             ["Leave"] = 0    
         }
@@ -80,13 +80,15 @@ local dialogues = {
 --special openshop one with stuff
 for matName, info in pairs(materialInfo) do
     if info.BuyPrice then
-        dialogues.BuyMaterials[2][`Buy {matName} ({info.BuyPrice} Thaler)`] = function()
+        dialogues.BuyMaterials[2][`Buy {matName}\n({info.BuyPrice} Thaler)`] = function()
             events:WaitForChild("TradeMaterial"):FireServer(matName, 1)
+            newDialogue("BuyMaterials")
         end
     end
     if info.SellPrice then
-        dialogues.SellMaterials[2][`Sell {matName} ({info.SellPrice} Thaler)`] = function()
+        dialogues.SellMaterials[2][`Sell {matName}\n({info.SellPrice} Thaler)`] = function()
             events:WaitForChild("TradeMaterial"):FireServer(matName, -1)
+            newDialogue("SellMaterials")
         end
     end
 end
