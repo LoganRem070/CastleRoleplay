@@ -197,3 +197,58 @@ events:WaitForChild("CraftItem").OnServerEvent:Connect(function(pla, itemName)
     --send new materials
     events:WaitForChild("UpdateMaterials"):FireClient(pla, profile.Data.Materials)
 end)
+
+events:WaitForChild("TradeItem").OnServerEvent:Connect(function(pla, itemName, amt)
+    local profile = Profiles[pla]
+    if profile == nil then return end
+
+    --sell items
+    if amt < 0 then
+
+        local removed = nil
+
+        --see if u can remove from armor / items
+        for index, possible in pairs(profile.Data.Armors) do
+            if possible.Name == itemName then
+                table.remove(profile.Data.Armors, index)
+                removed = armorInfo
+                break
+            end
+        end
+        for index, possible in pairs(profile.Data.Items) do
+            if possible.Name == itemName then
+                table.remove(profile.Data.Items, index)
+                removed = toolInfo
+                break
+            end
+        end
+
+        --if it was removed then give thaler
+        if removed then
+            profile.Data.Materials.Thaler += removed[itemName].SellPrice
+        end
+
+    --buy items
+    else
+        
+        local thisItemsStats
+        local whereToAdd
+        if armorInfo[itemName] then
+            thisItemsStats = armorInfo[itemName]
+            whereToAdd = profile.Data.Armors
+        elseif toolInfo[itemName] then
+            thisItemsStats = toolInfo[itemName]
+            whereToAdd = profile.Data.Items
+        end
+        if not thisItemsStats then return end
+
+        if profile.Data.Materials.Thaler >= thisItemsStats.BuyPrice then
+            profile.Data.Materials.Thaler -= thisItemsStats.BuyPrice
+            table.insert(whereToAdd, {
+                Name = thisItemsStats.Name,
+                Durability = thisItemsStats.Durability,
+            })
+        end
+
+    end
+end)
